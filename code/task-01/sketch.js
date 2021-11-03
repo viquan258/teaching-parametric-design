@@ -1,124 +1,90 @@
 /**
- * changing strokeweight on diagonals in a grid with colors
+ * changing positions of stapled circles in a grid
  *
  * MOUSE
- * position x          : left diagonal strokeweight
- * position y          : right diagonal strokeweight
- * left click          : new random layout
+ * position x          : mod2ule detail
+ * position y          : module parameter
  *
  * KEYS
+ * 1-3                 : draw mode
+ * arrow left/right    : number of tiles horizontally
+ * arrow up/down       : number of tiles vertically
  * s                   : save png
- * 1                   : round strokecap
- * 2                   : square strokecap
- * 3                   : project strokecap
- * 4                   : color left diagonal
- * 5                   : color right diagonal
- * 6                   : transparency left diagonal
- * 7                   : transparency right diagonal
- * 0                   : default
  */
- 'use strict';
+'use strict';
 
- var tileCount = 10;
- var actRandomSeed = 0;
- 
- var actStrokeCap;
- 
- var colorLeft;
- var colorRight;
- var alphaLeft = 255;
- var alphaRight = 255;
- 
- function setup() {
-   createCanvas(400, 400);
- 
-   actStrokeCap = ROUND;
-   colorLeft = color(20, 50, 123, alphaLeft);
-   colorRight = color(220, 100, 129, alphaRight);
- }
- 
- function draw() {
-   clear();
-   strokeCap(actStrokeCap);
- 
-   randomSeed(actRandomSeed);
- 
-   for (var gridY = 0; gridY < tileCount; gridY++) {
-     for (var gridX = 0; gridX < tileCount; gridX++) {
- 
-       var posX = width / tileCount * gridX;
-       var posY = height / tileCount * gridY;
- 
-       var toggle = int(random(0, 2));
- 
-       if (toggle == 0) {
-         stroke(colorLeft);
-         strokeWeight(mouseX / 10);
-         line(posX, posY, posX + width / tileCount, posY + height / tileCount);
-       }
-       if (toggle == 1) {
-         stroke(colorRight);
-         strokeWeight(mouseY / 10);
-         line(posX, posY + width / tileCount, posX + height / tileCount, posY);
-       }
-     }
-   }
- }
- 
- function mousePressed() {
-   actRandomSeed = random(100000);
- }
- 
- function keyReleased() {
-   if (key == 's' || key == 'S') saveCanvas(gd.timestamp(), 'png');
- 
-   if (key == '1') actStrokeCap = ROUND;
-   if (key == '2') actStrokeCap = SQUARE;
-   if (key == '3') actStrokeCap = PROJECT;
- 
-   var black = color(0, 0, 0, 255);
-   if (key == '4') {
-     if (colorsEqual(colorLeft, black)) {
-       colorLeft = color(197, 0, 123, alphaLeft);
-     } else {
-       colorLeft = color(0, 0, 0, alphaLeft);
-     }
-   }
-   if (key == '5') {
-     if (colorsEqual(colorRight, black)) {
-       colorRight = color(87, 35, 129, alphaRight);
-     } else {
-       colorRight = color(0, 0, 0, alphaRight);
-     }
-   }
- 
-   if (key == '6') {
-     if (alphaLeft == 255) {
-       alphaLeft = 127;
-     } else {
-       alphaLeft = 255;
-     }
-     colorLeft = color(red(colorLeft), green(colorLeft), blue(colorLeft), alphaLeft);
-   }
-   if (key == '7') {
-     if (alphaRight == 255) {
-       alphaRight = 127;
-     } else {
-       alphaRight = 255;
-     }
-     colorRight = color(red(colorRight), green(colorRight), blue(colorRight), alphaRight);
-   }
- 
-   if (key == '0') {
-     actStrokeCap = ROUND;
-     alphaLeft = 255;
-     alphaRight = 255;
-     colorLeft = color(0, 0, 0, alphaLeft);
-     colorRight = color(0, 0, 0, alphaRight);
-   }
- }
- 
- function colorsEqual(col1, col2) {
-   return col1.toString() == col2.toString();
- }
- 
+var count = 0;
+var tileCountX = 6;
+var tileCountY = 6;
+
+var drawMode = 1;
+
+function setup() {
+  createCanvas(400, 400);
+  rectMode(CENTER);
+  noFill();
+  stroke(255, 204, 0);
+
+}
+
+function draw() {
+  background(255);
+
+  count = mouseX / 100 + 5;
+  var para = min(height, mouseY) / height - 0.5;
+
+  var tileWidth = width / tileCountX;
+  var tileHeight = height / tileCountY;
+
+  for (var gridY = 0; gridY <= tileCountY; gridY++) {
+    for (var gridX = 0; gridX <= tileCountX; gridX++) {
+
+      var posX = tileWidth * gridX + tileWidth / 5;
+      var posY = tileHeight * gridY + tileHeight / 5;
+
+      push();
+      translate(posX, posY);
+
+      // switch between modules
+      switch (drawMode) {
+      case 1:
+        translate(-tileWidth / 5, -tileHeight / 5);
+        for (var i = 0; i < count; i++) {
+          line(0, (para + 2.5) * tileHeight, tileWidth, i * tileHeight / count);
+          line(0, i * tileHeight / count, tileWidth, tileHeight - (para + 2.5) * tileHeight);
+        }
+        break;
+      case 2:
+        for (var i = 0; i <= count; i++) {
+          line(para * tileWidth, para * tileHeight, tileWidth / 2, (i / count - 1) * tileHeight);
+          line(para * tileWidth, para * tileHeight, -tileWidth / 2, (i / count - 1) * tileHeight);
+          line(para * tileWidth, para * tileHeight, (i / count - 1) * tileWidth, tileHeight / 2);
+          line(para * tileWidth, para * tileHeight, (i / count - 1) * tileWidth, -tileHeight / 2);
+        }
+        break;
+      case 3:
+        for (var i = 0; i <= count; i++) {
+          line(0, para * tileHeight, tileWidth / 2, (i / count - 3) * tileHeight);
+          line(0, para * tileHeight, -tileWidth / 2, (i / count - 3) * tileHeight);
+          line(0, para * tileHeight, (i / count - 3) * tileWidth, tileHeight / 2);
+          line(0, para * tileHeight, (i / count - 3) * tileWidth, -tileHeight / 2);
+        }
+        break;
+      }
+
+      pop();
+
+    }
+  }
+}
+
+function keyReleased() {
+  if (key == 's' || key == 'S') saveCanvas(gd.timestamp(), 'png');
+  if (key == '1') drawMode = 1;
+  if (key == '2') drawMode = 2;
+  if (key == '3') drawMode = 3;
+  if (keyCode == DOWN_ARROW) tileCountY = max(tileCountY - 1, 1);
+  if (keyCode == UP_ARROW) tileCountY += 1;
+  if (keyCode == LEFT_ARROW) tileCountX = max(tileCountX - 1, 1);
+  if (keyCode == RIGHT_ARROW) tileCountX += 1;
+}
