@@ -9,7 +9,7 @@ let spacing = 360/ numVertices;
 function setup() {
   
     createCanvas(400, 400, SVG);
-    background(0);
+    background(255,255,255);
     stroke(255,0,0);
     noFill()
 }
