@@ -16,7 +16,9 @@ function setup() {
   }
   
   function draw() {
-  background(0);
+  background(255);
+  noLoop();
+  save('sketch.png');
   for (let i = 0; i < leaves.length; i++){
 
   leaves[i].show();
@@ -46,6 +48,6 @@ function setup() {
 
     }
 
-
+    
 
   }
